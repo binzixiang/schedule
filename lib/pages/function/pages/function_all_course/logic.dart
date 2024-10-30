@@ -87,9 +87,9 @@ class FunctionAllCourseLogic extends GetxController {
               .map((e) => PickerItem<String>(value: e["majorName"]))
               .toList());
         }
-      } else {
-        await reGetNetworkData();
       }
+
+      await reGetNetworkData();
     } else {
       await reGetNetworkData();
     }
@@ -110,6 +110,17 @@ class FunctionAllCourseLogic extends GetxController {
 
   /// 重新初始化网络数据
   Future<void> reGetNetworkData() async {
+    // 每隔7天检测一次
+    if (storage.getString("lastFunctionAllCourseGetDataTime") != null) {
+      DateTime lastCheckVersionTime =
+      DateTime.parse(storage.getString("lastFunctionAllCourseGetDataTime")!);
+      if (DateTime.now().difference(lastCheckVersionTime).inDays < 7) {
+        return;
+      }
+    } else {
+      storage.setString("lastFunctionAllCourseGetDataTime", DateTime.now().toString());
+    }
+
     // 获取学院信息
     await queryApi.queryCollegeInfo().then((value) {
       state.originCollegeInfo = value;
@@ -139,6 +150,9 @@ class FunctionAllCourseLogic extends GetxController {
           .map((e) => PickerItem<String>(value: e["majorName"]))
           .toList());
     }
+
+    // 保存检测时间
+    storage.setString("lastFunctionAllCourseGetDataTime", DateTime.now().toString());
   }
 
   /// 刷新数据
