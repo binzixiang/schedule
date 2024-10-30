@@ -28,7 +28,7 @@
         </activity>
 
         <receiver android:name=".glance.TodayScheduleWidgetReceiver"
-            android:label="Glance"
+            android:label="Schedule"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
