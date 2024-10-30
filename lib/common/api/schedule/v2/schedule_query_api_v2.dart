@@ -178,11 +178,11 @@ class ScheduleQueryApiV2 {
               List<int> tempResultIndexList = [];
               if (match != null) {
                 String str = match.group(1)!;
-                if(str.length == 1) {
+                if (str.length == 1) {
                   tempResultIndexList.add(resultIndex);
                 } else {
                   List<int> list =
-                  str.split("-").map((e) => int.parse(e)).toList();
+                      str.split("-").map((e) => int.parse(e)).toList();
                   int timeDiff = list[1] - list[0];
                   if (timeDiff > 1) {
                     for (int k = 0; k < (timeDiff - 1) ~/ 2; k++) {
@@ -196,7 +196,6 @@ class ScheduleQueryApiV2 {
                     tempResultIndexList.add(resultIndex);
                   }
                 }
-
               } else {
                 tempResultIndexList.add(resultIndex);
               }
@@ -731,45 +730,28 @@ class ScheduleQueryApiV2 {
         .toOptions();
 
     Map<String, dynamic> params = {
-      "xqlbmc": "",
+      "pageNum": "1",
+      "pageSize": 100,
       "xnxqid": semester,
-      "xqlb": "",
+      "xqlb": 3,
     };
 
     // 处理返回数据
     return await _request
         .post("/jsxsd/xsks/xsksap_list", params: params, options: options)
         .then((value) {
-      Document doc = parse(value.data);
-      // logger.i(doc.outerHtml);
-      Element? table = doc.getElementById("dataList");
+      var data = ResponseUtils.transformObj(value);
       List<Map<String, dynamic>> result = [];
-      if (table != null) {
-        List<Element> trs = table.getElementsByTagName("tr");
-        trs.removeAt(0);
 
-        for (Element tr in trs) {
-          if (tr.outerHtml.contains("未查询到数据")) {
-            continue;
-          }
-          // logger.i(tr.outerHtml);
-          List<Element> tds = tr.getElementsByTagName("td");
-
-          // 考试名称
-          String examName = tds[2].text;
-          // 考试时间
-          String examTime = tds[6].text;
-          // 考试地点
-          String examAddress = tds[7].text;
-
+      if (data["data"] != null) {
+        for (Map<String, dynamic> item in data["data"]) {
           result.add({
-            "examName": examName,
-            "examTime": examTime,
-            "examAddress": examAddress,
+            "examName": item["kskcmc"],
+            "examTime": item["kssj"],
+            "examAddress": item["js_mc"],
           });
         }
       }
-
       return result;
     });
   }
