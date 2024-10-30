@@ -57,7 +57,7 @@ class ScheduleQueryApiV2 {
             "className": item["kc_mc"],
             "classCredit": item["xf"],
             "classScore": item["zcjstr"],
-            "classGPA": "",
+            "classGPA": item["jd"],
             "classType": item["kcsx"],
           });
         }
@@ -722,7 +722,6 @@ class ScheduleQueryApiV2 {
   /// 获取考试计划
   /// - [semester] : 学期
   /// - [cachePolicy] : 缓存策略
-  /// ToDo
   Future<List<Map<String, dynamic>>> queryPersonExamPlan(
       {required String semester, CachePolicy? cachePolicy}) async {
     Options options = _request.cacheOptions
