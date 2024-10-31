@@ -10,14 +10,24 @@
     适用于强智教务系统的课表APP
     <br />
     <br />
-    <a href="https://github.com/YiQiuYes/schedule/releases" target="blank"><strong>访问DEMO</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="#section1" target="blank"><strong>下载安装包</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="https://qm.qq.com/cgi-bin/qm/qr?k=bbKNBbiwIRcPznrRXO9xWX38ec_iFwN9&jump_from=webapi&authKey=gc4E3bzfE+GJ0uFkHXzQPA4lHc3tg+BdBbMOGWfBysPbnzaWtRqeKVPKqt/eK+Lj" target="blank"><strong>加入交流群</strong></a>
+    <a href="https://github.com/YiQiuYes/schedule/releases" target="blank">
+      <strong>访问DEMO</strong>
+    </a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="#section1" target="blank">
+      <strong>下载安装包</strong>
+    </a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="https://qm.qq.com/cgi-bin/qm/qr?k=bbKNBbiwIRcPznrRXO9xWX38ec_iFwN9&jump_from=webapi&authKey=gc4E3bzfE+GJ0uFkHXzQPA4lHc3tg+BdBbMOGWfBysPbnzaWtRqeKVPKqt/eK+Lj" target="blank">
+      <strong>加入交流群</strong>
+    </a>
     <br />
     <br />
   </p>
+</p>
 
 [![appmain][appmain-screenshot]](https://github.com/YiQiuYes/schedule)
+
 
 ## 特性
 
@@ -27,9 +37,11 @@
 - 日程课表
 - 成绩查询
 - 全校课表
-- 社会成绩查询
+- 社会成绩
+- 教师课表
 - 空教室
 - 慧生活798
+- 河西用水
 - 无任何广告
 - 更多特性开发中
 
