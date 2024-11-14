@@ -78,7 +78,7 @@ class PersonSettingLogic extends GetxController {
 
             if (downloadUrl.isEmpty) {
               downloadUrl = downloadUrls
-                  .firstWhere((element) => element.contains("android"));
+                  .firstWhere((element) => element.contains("all"));
             }
           } else if (PlatformUtils.isIOS) {
             for (String url in downloadUrls) {
