@@ -48,7 +48,7 @@ jobs:
         with:
           platform: android
           # args: --release-version=${{env.version}} --staging
-          args: --verbose --release-version=${{env.version}} ${{ inputs.staging == 'true' && '--staging' || '' }}
+          args: --release-version=${{env.version}} ${{ inputs.staging == 'true' && '--track=staging' || '' }}
 
   job_ipa:
     name: 构建ios patch
@@ -66,4 +66,4 @@ jobs:
         with:
           platform: ios
           # args: --release-version=${{env.version}} --staging --no-codesign
-          args: --verbose --release-version=${{env.version}} ${{ inputs.staging == 'true' && '--staging' || '' }} --no-codesign
+          args: --release-version=${{env.version}} ${{ inputs.staging == 'true' && '--track=staging' || '' }} --no-codesign
