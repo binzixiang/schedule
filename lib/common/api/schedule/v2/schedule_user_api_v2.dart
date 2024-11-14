@@ -14,7 +14,7 @@ class ScheduleUserApiV2 {
   ScheduleUserApiV2._privateConstructor();
 
   static final ScheduleUserApiV2 _instance =
-  ScheduleUserApiV2._privateConstructor();
+      ScheduleUserApiV2._privateConstructor();
 
   factory ScheduleUserApiV2() {
     return _instance;
@@ -67,13 +67,61 @@ class ScheduleUserApiV2 {
     // base64加密
     String userAccountBase64 = base64Encode(utf8.encode(userAccount));
     String userPasswordBase64 = base64Encode(utf8.encode(userPassword));
-    String encoded = "$userAccountBase64%%%$userPasswordBase64";
+    Response res = await _request
+        .get(
+      "http://jwxt.hut.edu.cn/jsxsd/",
+      options: _request.cacheOptions
+          .copyWith(policy: CachePolicy.noCache)
+          .toOptions(),
+    )
+        .timeout(const Duration(seconds: 10), onTimeout: () {
+      return Response(data: "", requestOptions: RequestOptions());
+    });
+
+    if(res.data == ""){
+      return ScheduleUserStatus.fail;
+    }
+
+    String htmlStr = res.data;
+    // 正则表达式匹配 scode = "()"; 中()内的数据
+    String scode;
+    RegExp regExp = RegExp(r'scode = "(.*?)";');
+    Match? match = regExp.firstMatch(htmlStr);
+    if (match != null) {
+      scode = match.group(1)!;
+    } else {
+      return ScheduleUserStatus.fail;
+    }
+
+    String sxh;
+    regExp = RegExp(r'sxh = "(.*?)";');
+    match = regExp.firstMatch(htmlStr);
+    if (match != null) {
+      sxh = match.group(1)!;
+      // logger.i(sxh);
+    } else {
+      return ScheduleUserStatus.fail;
+    }
+    var code = "$userAccountBase64%%%$userPasswordBase64";
+    var encoded = "";
+    for (var i = 0; i < code.length; i++) {
+      if (i < 20) {
+        encoded = encoded +
+            code.substring(i, i + 1) +
+            scode.substring(0, int.parse(sxh.substring(i, i + 1)));
+        scode =
+            scode.substring(int.parse(sxh.substring(i, i + 1)), scode.length);
+      } else {
+        encoded = encoded + code.substring(i, code.length);
+        i = code.length;
+      }
+    }
     data["encoded"] = encoded;
 
     return await _request
         .post("/jsxsd/xk/LoginToXk", data: data, options: options)
         .then((value) {
-          // logger.i(value.data);
+      // logger.i(value.data);
       bool status = value.data == "";
       switch (status) {
         case true:
@@ -102,7 +150,6 @@ class ScheduleUserApiV2 {
           .copyWith(policy: CachePolicy.noCache)
           .toOptions(),
     );
-
 
     String dataStr = res.data;
     var scode = dataStr.split("#")[0];
@@ -171,7 +218,8 @@ class ScheduleUserApiV2 {
           document.getElementsByClassName("qz-infoContent").firstOrNull;
 
       if (userinfo != null) {
-        List<Element> infoListTitle = userinfo.getElementsByClassName("infoContentTitle qz-ellipse");
+        List<Element> infoListTitle =
+            userinfo.getElementsByClassName("infoContentTitle qz-ellipse");
         List<Element> infoListBody =
             userinfo.getElementsByClassName("qz-rowlan qz-flex-row qz-ellipse");
 
