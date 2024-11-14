@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:schedule/common/api/other/other_api.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../common/utils/device_info_utils.dart';
 import '../../../common/utils/package_info_utils.dart';
 import '../../../common/utils/platform_utils.dart';
 import '../../../generated/l10n.dart';
@@ -26,7 +27,7 @@ class PersonSettingLogic extends GetxController {
       required Widget Function(BuildContext context)
           lastVersionDialogBuilder}) {
     otherApi.getVersionInfo().then(
-      (value) {
+      (value) async {
         if (value['tag_name'] == null) {
           // 获取版本信息失败
           // logger.i("获取版本信息失败");
@@ -66,9 +67,18 @@ class PersonSettingLogic extends GetxController {
           if (PlatformUtils.isAndroid) {
             for (String url in downloadUrls) {
               if (url.contains("android")) {
-                downloadUrl = url;
-                break;
+                // 获取系统架构
+                String arch = await DeviceInfoUtils.getCpuArchitecture();
+                if (url.contains(arch)) {
+                  downloadUrl = url;
+                  break;
+                }
               }
+            }
+
+            if (downloadUrl.isEmpty) {
+              downloadUrl = downloadUrls
+                  .firstWhere((element) => element.contains("android"));
             }
           } else if (PlatformUtils.isIOS) {
             for (String url in downloadUrls) {
@@ -109,9 +119,9 @@ class PersonSettingLogic extends GetxController {
   /// 获取主题列表
   Map<String, String> getThemesMap() {
     final map = {
-      "default" : S.current.setting_follow_system,
-      "light" : S.current.setting_theme_light,
-      "dark" : S.current.setting_theme_dark,
+      "default": S.current.setting_follow_system,
+      "light": S.current.setting_theme_light,
+      "dark": S.current.setting_theme_dark,
     };
     return map;
   }
@@ -119,8 +129,8 @@ class PersonSettingLogic extends GetxController {
   /// 获取语言列表
   Map<String, String> getLanguagesMap() {
     final map = {
-      "zh-CN" : "简体中文",
-      "en-US" : "English",
+      "zh-CN": "简体中文",
+      "en-US": "English",
     };
     return map;
   }

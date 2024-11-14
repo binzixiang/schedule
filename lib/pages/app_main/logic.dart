@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../common/api/other/other_api.dart';
 import '../../common/manager/data_storage_manager.dart';
+import '../../common/utils/device_info_utils.dart';
 import '../../common/utils/flutter_toast_utils.dart';
 import '../../common/utils/package_info_utils.dart';
 import '../../common/utils/platform_utils.dart';
@@ -64,7 +65,7 @@ class AppMainLogic extends GetxController {
       storage.setString("lastCheckVersionTime", DateTime.now().toString());
     }
 
-    otherApi.getVersionInfo().then((value) {
+    otherApi.getVersionInfo().then((value) async {
       if (value['tag_name'] == null) {
         return;
       }
@@ -92,9 +93,18 @@ class AppMainLogic extends GetxController {
         if (PlatformUtils.isAndroid) {
           for (String url in downloadUrls) {
             if (url.contains("android")) {
-              downloadUrl = url;
-              break;
+              // 获取系统架构
+              String arch = await DeviceInfoUtils.getCpuArchitecture();
+              if (url.contains(arch)) {
+                downloadUrl = url;
+                break;
+              }
             }
+          }
+
+          if (downloadUrl.isEmpty) {
+            downloadUrl = downloadUrls
+                .firstWhere((element) => element.contains("android"));
           }
         } else if (PlatformUtils.isIOS) {
           for (String url in downloadUrls) {
@@ -146,7 +156,7 @@ class AppMainLogic extends GetxController {
     bool isExit = false;
     switch (state.navigateCurrentIndex.value) {
       case 1:
-        if(state.orientation.value) {
+        if (state.orientation.value) {
           Get.nestedKey(2)?.currentState?.popUntil((route) {
             if (route.settings.name == FunctionRouteConfig.main) {
               isExit = true;
