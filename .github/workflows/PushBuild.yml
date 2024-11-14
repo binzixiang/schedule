@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       version: "pushAction"
+      ALIAS: ${{ secrets.ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -30,11 +33,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION  }}
-      - name: 执行编译命令
-        env:
-          ALIAS: ${{ secrets.ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+      - name: 执行编译命令分架构
         run: | 
           flutter pub get
           flutter build apk --release --target-platform=android-arm,android-arm64 --split-per-abi
@@ -45,8 +44,19 @@ jobs:
       - name: 上传产物
         uses: actions/upload-artifact@v3
         with:
-          name: android
+          name: android-split
           path: build/app/outputs/apk/release/schedule-android-*-${{ env.version }}.apk
+      - name: 执行编译命令全架构
+        run: |
+          flutter pub get
+          flutter build apk --release --target-platform=android-arm,android-arm64
+      - name: 重命名文件
+        run: mv build/app/outputs/apk/release/app-release.apk build/app/outputs/apk/release/schedule-android-all-${{ env.version }}.apk
+      - name: 上传产物全架构
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-all
+          path: build/app/outputs/apk/release/schedule-android-all-${{ env.version }}.apk
 
   job_ipa:
     name: 构建ios软件
