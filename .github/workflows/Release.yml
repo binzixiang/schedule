@@ -52,24 +52,10 @@ jobs:
         run: echo $SIGNING_KEY | base64 -d > android/app/key.jks
       - name: 设置 Shorebird
         uses: shorebirdtech/setup-shorebird@v1
-      - name: 执行编译分架构
-        uses: shorebirdtech/shorebird-release@v0
-        with:
-          platform: android
-          args: --flutter-version=${{env.FLUTTER_VERSION}} --artifact=apk --target-platform=android-arm,android-arm64 --split-per-abi
-      - name: 重命名文件
-        run: |
-          mv build/app/outputs/apk/release/app-armeabi-v7a-release.apk build/app/outputs/apk/release/schedule-android-armeabi-v7a-${{ env.version }}.apk
-          mv build/app/outputs/apk/release/app-arm64-v8a-release.apk build/app/outputs/apk/release/schedule-android-arm64-v8a-${{ env.version }}.apk
-      - name: 上传产物分架构
-        uses: actions/upload-artifact@v3
-        with:
-          name: android
-          path: build/app/outputs/apk/release/schedule-android-*-${{ env.version }}.apk
       - name: 执行编译全架构
         uses: shorebirdtech/shorebird-release@v0
         with:
-          platform: android-split
+          platform: android
           args: --flutter-version=${{env.FLUTTER_VERSION}} --artifact=apk --target-platform=android-arm,android-arm64
       - name: 重命名文件
         run: mv build/app/outputs/apk/release/app-release.apk build/app/outputs/apk/release/schedule-android-all-${{ env.version }}.apk
@@ -134,4 +120,4 @@ jobs:
           # prerelease: true # 预发布 别人可以看到 版本号会继续加
           tag: ${{ env.version }} # 版本号 v0.1.0
           body: ${{ env.body }} # 输出的内容
-          artifacts: "android-split/*,android-all,ios/*"
+          artifacts: "android-all/*,ios/*"
