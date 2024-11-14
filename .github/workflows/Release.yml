@@ -57,14 +57,16 @@ jobs:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
         with:
           platform: android
-          args: --flutter-version=${{env.FLUTTER_VERSION}} --artifact=apk --target-platform=android-arm,android-arm64
+          args: --flutter-version=${{env.FLUTTER_VERSION}} --artifact=apk --target-platform=android-arm,android-arm64 --split-per-abi
       - name: 重命名文件
-        run: mv build/app/outputs/apk/release/app-release.apk build/app/outputs/apk/release/schedule-android-${{ env.version }}.apk
+        run: |
+          mv build/app/outputs/apk/release/app-armeabi-v7a-release.apk build/app/outputs/apk/release/schedule-android-armeabi-v7a-${{ env.version }}.apk
+          mv build/app/outputs/apk/release/app-arm64-v8a-release.apk build/app/outputs/apk/release/schedule-android-arm64-v8a-${{ env.version }}.apk
       - name: 上传产物
         uses: actions/upload-artifact@v3
         with:
           name: android
-          path: build/app/outputs/apk/release/schedule-android-${{ env.version }}.apk
+          path: build/app/outputs/apk/release/schedule-android-*-${{ env.version }}.apk
 
   job_ipa:
     needs: job_v
