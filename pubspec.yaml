@@ -39,6 +39,8 @@ dependencies:
   fluttertoast: ^8.2.8
   uuid: ^4.5.1
   encrypt: ^5.0.3
+  onnxruntime: ^1.4.1
+  image: ^4.3.0
   home_widget:
     git:
       url: https://github.com/YiQiuYes/home_widget.git
@@ -56,6 +58,7 @@ flutter:
     - lib/assets/images/
     - lib/assets/lotties/
     - lib/assets/icons/
+    - lib/assets/ocr/
     - shorebird.yaml
 
   # An image asset can refer to one or more resolution-specific "variants", see
