@@ -480,10 +480,10 @@ class S {
     );
   }
 
-  /// `Bathe`
+  /// `HeXi water`
   String get function_hot_water {
     return Intl.message(
-      'Bathe',
+      'HeXi water',
       name: 'function_hot_water',
       desc: '',
       args: [],
