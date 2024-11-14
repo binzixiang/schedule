@@ -57,7 +57,7 @@ jobs:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
         with:
           platform: android
-          args: --verbose --flutter-version=${{env.FLUTTER_VERSION}} --artifact=apk --target-platform=android-arm,android-arm64
+          args: --flutter-version=${{env.FLUTTER_VERSION}} --artifact=apk --target-platform=android-arm,android-arm64
       - name: 重命名文件
         run: mv build/app/outputs/apk/release/app-release.apk build/app/outputs/apk/release/schedule-android-${{ env.version }}.apk
       - name: 上传产物
@@ -83,7 +83,7 @@ jobs:
         uses: shorebirdtech/shorebird-release@v0
         with:
           platform: ios
-          args: --verbose --flutter-version=${{env.FLUTTER_VERSION}} --no-codesign
+          args: --flutter-version=${{env.FLUTTER_VERSION}} --no-codesign
       - name: 构造ipa
         run: |
           sh scripts/build-ipa.sh
