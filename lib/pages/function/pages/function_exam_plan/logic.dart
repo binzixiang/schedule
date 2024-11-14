@@ -21,6 +21,19 @@ class FunctionExamPlanLogic extends GetxController {
         .queryPersonExamPlan(semester: globalState.semesterWeekData["semester"])
         .then((value) {
       state.isLoading.value = false;
+      // logger.i(value);
+      // 判断字符串是否包含 类似2024-11-07的日期
+      final reg = RegExp(r"\d{4}-\d{2}-\d{2}");
+      // 过滤比当前日期小的考试计划
+      value.removeWhere((element) {
+        final match = reg.firstMatch(element["examTime"]);
+        if (match == null) {
+          return true;
+        }
+
+        final examTime = DateTime.parse(match.group(0)!);
+        return examTime.isBefore(DateTime.now());
+      });
       state.personExamList.value = value;
       update();
     });
