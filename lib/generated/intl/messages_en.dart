@@ -96,7 +96,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Exam schedule"),
         "function_exam_plan_empty":
             MessageLookupByLibrary.simpleMessage("No exam information"),
-        "function_hot_water": MessageLookupByLibrary.simpleMessage("Bathe"),
+        "function_hot_water":
+            MessageLookupByLibrary.simpleMessage("HeXi water"),
         "function_hot_water_btn_status_disable":
             MessageLookupByLibrary.simpleMessage("End"),
         "function_hot_water_btn_status_enable":

@@ -88,7 +88,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "function_exam_plan": MessageLookupByLibrary.simpleMessage("考试计划"),
         "function_exam_plan_empty":
             MessageLookupByLibrary.simpleMessage("暂无考试安排"),
-        "function_hot_water": MessageLookupByLibrary.simpleMessage("洗澡"),
+        "function_hot_water": MessageLookupByLibrary.simpleMessage("河西用水"),
         "function_hot_water_btn_status_disable":
             MessageLookupByLibrary.simpleMessage("结束"),
         "function_hot_water_btn_status_enable":
