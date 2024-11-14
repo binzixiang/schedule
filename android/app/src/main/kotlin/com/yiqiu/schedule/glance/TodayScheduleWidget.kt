@@ -198,7 +198,8 @@ class TodayScheduleWidget : GlanceAppWidget() {
                 Text(
                     modifier = GlanceModifier.width(32.dp),
                     text = classTime,
-                    style = TextStyle(fontSize = 11.sp)
+                    style = TextStyle(fontSize = 11.sp,
+                        color = DynamicThemeColorProviders.onBackground)
                 )
 
                 Spacer(
@@ -219,7 +220,8 @@ class TodayScheduleWidget : GlanceAppWidget() {
                 Column {
                     Text(
                         text = className,
-                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+                        style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold,
+                            color = DynamicThemeColorProviders.onBackground),
                         maxLines = 1
                     )
 
@@ -229,7 +231,8 @@ class TodayScheduleWidget : GlanceAppWidget() {
 
                     Text(
                         text = subText,
-                        style = TextStyle(fontSize = 11.sp),
+                        style = TextStyle(fontSize = 11.sp,
+                            color = DynamicThemeColorProviders.onBackground),
                         maxLines = 1
                     )
                 }
