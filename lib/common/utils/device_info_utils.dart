@@ -35,7 +35,7 @@ class DeviceInfoUtils {
           return supportedAbis.first;
         }
       } else {
-        return 'armeabi';
+        return 'all';
       }
     } else {
       return 'unknown';
