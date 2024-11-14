@@ -207,7 +207,7 @@ class LoginLogic extends GetxController {
   /// 登录教务系统
   Future<String?>? loginEducationalSystem(LoginData data) async {
     // 开始登录并超时时间为10s
-    final loginStatus = await userApi.autoLoginEducationalSystem(
+    final loginStatus = await userApi.loginEducationalSystem(
       userAccount: data.name,
       userPassword: data.password,
     );

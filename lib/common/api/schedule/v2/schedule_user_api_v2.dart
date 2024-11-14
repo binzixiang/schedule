@@ -6,7 +6,9 @@ import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
+import 'package:schedule/common/utils/logger_utils.dart';
 
+import '../../../manager/onnx_manager.dart';
 import '../../../manager/request_manager.dart';
 import '../schedule_user_api.dart';
 
@@ -22,9 +24,11 @@ class ScheduleUserApiV2 {
 
   // 网络管家
   final _request = RequestManager();
+  // 验证码ocr
+  final _ocr = OnnxManager();
 
   /// 获取验证码数据
-  Future<Uint8List> getCaptcha() async {
+  Future<String> getCaptcha() async {
     Random random = Random();
     double t = random.nextDouble();
 
@@ -40,7 +44,7 @@ class ScheduleUserApiV2 {
         result.add(subList);
       }
 
-      return result.takeBytes();
+      return await _ocr.recognizeImage(result.takeBytes());
     });
   }
 
@@ -169,39 +173,49 @@ class ScheduleUserApiV2 {
       }
     }
 
-    Map<String, dynamic> params = {
-      "userAccount": userAccount,
-      "userPassword": "",
-      "encoded": encoded,
-      "loginMethod": "logon",
-    };
+    // 登录失败次数
+    int failCount = 0;
+    while (failCount < 5) {
+      // 获取验证码
+      String messageCode = await getCaptcha();
+      Map<String, dynamic> params = {
+        "userAccount": userAccount,
+        "userlanguage": 0,
+        "userPassword": "",
+        "encoded": encoded,
+        "loginMethod": "logon",
+        "RANDOMCODE": messageCode,
+      };
 
-    Options options =
-        _request.cacheOptions.copyWith(policy: CachePolicy.noCache).toOptions();
-    options.validateStatus = (status) {
-      return status! < 500;
-    };
-    options.followRedirects = false;
-    options.contentType = "application/x-www-form-urlencoded";
+      Options options =
+      _request.cacheOptions.copyWith(policy: CachePolicy.noCache).toOptions();
+      options.validateStatus = (status) {
+        return status! < 500;
+      };
+      options.followRedirects = false;
+      options.contentType = "application/x-www-form-urlencoded";
 
-    res = await _request.post("/Logon.do?method=logon",
-        params: params, options: options);
+      res = await _request.post("/Logon.do?method=logon",
+          params: params, options: options);
 
-    bool status = res.data == "";
-    switch (status) {
-      case true:
-        String url = res.headers.value("location")!;
-        url = url.split("/jsxsd")[1];
-        url = "/jsxsd$url";
-        res = await _request.get(url, options: options);
-        url = res.headers.value("location")!;
-        url = url.split("/jsxsd")[1];
-        url = "/jsxsd$url";
-        res = await _request.get(url, options: options);
-        return ScheduleUserStatus.success;
-      case false:
-        return ScheduleUserStatus.fail;
+      bool status = res.data == "";
+      switch (status) {
+        case true:
+          String url = res.headers.value("location")!;
+          url = url.split("/jsxsd")[1];
+          url = "/jsxsd$url";
+          res = await _request.get(url, options: options);
+          url = res.headers.value("location")!;
+          url = url.split("/jsxsd")[1];
+          url = "/jsxsd$url";
+          res = await _request.get(url, options: options);
+          return ScheduleUserStatus.success;
+        case false:
+          failCount++;
+      }
     }
+
+    return ScheduleUserStatus.fail;
   }
 
   /// 获取个人信息

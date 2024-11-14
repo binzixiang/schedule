@@ -57,7 +57,7 @@ class SplashLogic extends GetxController {
     }
 
     userApi
-        .autoLoginEducationalSystem(userAccount: username, userPassword: password)
+        .loginEducationalSystem(userAccount: username, userPassword: password)
         .then((loginStatus) {
       switch (loginStatus) {
         case ScheduleUserStatus.loginTimeOut:

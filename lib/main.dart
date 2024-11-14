@@ -8,6 +8,7 @@ import 'package:schedule/global_logic.dart';
 import 'package:schedule/pages/route_config.dart';
 
 import 'common/manager/data_storage_manager.dart';
+import 'common/manager/onnx_manager.dart';
 import 'common/manager/request_manager.dart';
 import 'common/utils/device_info_utils.dart';
 import 'common/utils/package_info_utils.dart';
@@ -25,6 +26,9 @@ Future<void> main() async {
 
   // 初始化数据存储读取器
   await DataStorageManager().init();
+
+  // 初始化onnx
+  await OnnxManager().initOnnxModel(OnnxModelType.ocr);
 
   // 初始化网络请求管理
   await RequestManager().persistCookieJarInit();
@@ -44,54 +48,53 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DynamicColorBuilder(
-      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
-        return ScreenUtilInit(
-          designSize: const Size(720, 1080),
-          splitScreenMode: true,
-          ensureScreenSize: true,
-          builder: (BuildContext context, Widget? child) {
-            return GetBuilder<GlobalLogic>(builder: (logic) {
-              return GetMaterialApp(
-                title: 'Flutter Demo',
-                theme: ThemeData(
-                  colorScheme: logic.state.settings["isMonetColor"]
-                      ? lightDynamic
-                      : ColorScheme.fromSeed(
-                          seedColor: logic.getColorTheme(),
-                          brightness: Brightness.light,
-                        ),
-                  useMaterial3: true,
-                ),
-                darkTheme: ThemeData(
-                  colorScheme: logic.state.settings["isMonetColor"]
-                      ? darkDynamic
-                      : ColorScheme.fromSeed(
-                          seedColor: logic.getColorTheme(),
-                          brightness: Brightness.dark,
-                        ),
-                  useMaterial3: true,
-                ),
-                themeMode: logic.getThemeMode(),
-                localizationsDelegates: const [
-                  S.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: S.delegate.supportedLocales,
-                getPages: RouteConfig.getPages,
-                initialRoute: RouteConfig.appMain,
-                locale: logic.getLocale(),
-                localeResolutionCallback:
-                    (Locale? deviceLocale, Iterable<Locale> supportedLocales) {
-                  String language = logic.state.settings["language"];
-                  return Locale(language.split("-")[0], language.split("-")[1]);
-                },
-              );
-            });
-          },
-        );
+    return ScreenUtilInit(
+      designSize: const Size(720, 1080),
+      splitScreenMode: true,
+      ensureScreenSize: true,
+      builder: (BuildContext context, Widget? child) {
+        return GetBuilder<GlobalLogic>(builder: (logic) {
+          return DynamicColorBuilder(
+              builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+            return GetMaterialApp(
+              title: 'Schedule',
+              theme: ThemeData(
+                colorScheme: logic.state.settings["isMonetColor"]
+                    ? lightDynamic
+                    : ColorScheme.fromSeed(
+                        seedColor: logic.getColorTheme(),
+                        brightness: Brightness.light,
+                      ),
+                useMaterial3: true,
+              ),
+              darkTheme: ThemeData(
+                colorScheme: logic.state.settings["isMonetColor"]
+                    ? darkDynamic
+                    : ColorScheme.fromSeed(
+                        seedColor: logic.getColorTheme(),
+                        brightness: Brightness.dark,
+                      ),
+                useMaterial3: true,
+              ),
+              themeMode: logic.getThemeMode(),
+              localizationsDelegates: const [
+                S.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: S.delegate.supportedLocales,
+              getPages: RouteConfig.getPages,
+              initialRoute: RouteConfig.appMain,
+              locale: logic.getLocale(),
+              localeResolutionCallback:
+                  (Locale? deviceLocale, Iterable<Locale> supportedLocales) {
+                String language = logic.state.settings["language"];
+                return Locale(language.split("-")[0], language.split("-")[1]);
+              },
+            );
+          });
+        });
       },
     );
   }
