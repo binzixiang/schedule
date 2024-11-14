@@ -3,7 +3,7 @@ name: Release
 on:
   workflow_dispatch: # 手动触发
 env:
-  FLUTTER_VERSION: '3.24.3'
+  FLUTTER_VERSION: '3.24.1'
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
 
 permissions: write-all # 给所有工作写权限

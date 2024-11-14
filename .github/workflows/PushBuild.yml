@@ -5,7 +5,7 @@ on:
     branches:
       - getx
 env:
-  FLUTTER_VERSION: '3.24.3'
+  FLUTTER_VERSION: '3.24.1'
 
 jobs:
   job_apk:
