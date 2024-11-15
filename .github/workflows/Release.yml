@@ -78,24 +78,42 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: 设置 Shorebird
-        uses: shorebirdtech/setup-shorebird@v1
+      - name: 编译环境设置
+        uses: subosito/flutter-action@v2
         with:
-          cache: true
+          flutter-version: ${{ env.FLUTTER_VERSION  }}
       - name: Build (ios)
-        uses: shorebirdtech/shorebird-release@v0
-        with:
-          platform: ios
-          args: --flutter-version=${{env.FLUTTER_VERSION}} --no-codesign
-      - name: 构造ipa
         run: |
-          sh scripts/build-ipa.sh
-          mv build/ios/archive/Runner.xcarchive/Products/Applications/release-ios.ipa build/ios/archive/Runner.xcarchive/Products/Applications/schedule-ios-${{ env.version }}.ipa
+          flutter pub get
+          flutter build ios --release --no-codesign
+          mkdir -p build/ios/iphoneos/Payload
+          mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload
+          cd build/ios/iphoneos && zip -9 release-ios.ipa -r Payload
+      - name: 重命名文件
+        run: mv build/ios/iphoneos/release-ios.ipa build/ios/iphoneos/schedule-ios-${{ env.version }}.ipa
       - name: 上传产物
         uses: actions/upload-artifact@v3
         with:
           name: ios
-          path: build/ios/archive/Runner.xcarchive/Products/Applications/schedule-ios-${{ env.version }}.ipa
+          path: build/ios/iphoneos/schedule-ios-${{ env.version }}.ipa
+#      - name: 设置 Shorebird
+#        uses: shorebirdtech/setup-shorebird@v1
+#        with:
+#          cache: true
+#      - name: Build (ios)
+#        uses: shorebirdtech/shorebird-release@v0
+#        with:
+#          platform: ios
+#          args: --flutter-version=${{env.FLUTTER_VERSION}} --no-codesign
+#      - name: 构造ipa
+#        run: |
+#          sh scripts/build-ipa.sh
+#          mv build/ios/archive/Runner.xcarchive/Products/Applications/release-ios.ipa build/ios/archive/Runner.xcarchive/Products/Applications/schedule-ios-${{ env.version }}.ipa
+#      - name: 上传产物
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: ios
+#          path: build/ios/archive/Runner.xcarchive/Products/Applications/schedule-ios-${{ env.version }}.ipa
 
   job_release:
     needs: [ job_v,job_apk,job_ipa ]
