@@ -74,14 +74,12 @@ jobs:
       - name: Build (ios)
         run: |
           flutter pub get
-          flutter build ios --release --no-codesign
-          mkdir -p build/ios/iphoneos/Payload
-          mv build/ios/iphoneos/Runner.app build/ios/iphoneos/Payload
-          cd build/ios/iphoneos && zip -9 release-ios.ipa -r Payload
+          flutter build ipa --release --no-codesign
+          sh scripts/build-ipa.sh
       - name: 重命名文件
-        run:  mv build/ios/iphoneos/release-ios.ipa build/ios/iphoneos/schedule-ios-${{ env.version }}.ipa
+        run:  mv build/ios/archive/Runner.xcarchive/Products/Applications/release-ios.ipa build/ios/archive/Runner.xcarchive/Products/Applications/schedule-ios-${{ env.version }}.ipa
       - name: 上传产物
         uses: actions/upload-artifact@v3
         with:
           name: ios
-          path: build/ios/iphoneos/schedule-ios-${{ env.version }}.ipa
+          path: build/ios/archive/Runner.xcarchive/Products/Applications/schedule-ios-${{ env.version }}.ipa
