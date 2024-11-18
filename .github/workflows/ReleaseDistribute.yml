@@ -1,7 +1,22 @@
-name: Release
+name: ReleaseDistribute
 
 on:
   workflow_dispatch: # 手动触发
+    inputs:
+      android_release:
+        description: Android release
+        required: true
+        type: choice
+        options:
+          - true
+          - false
+      ios_release:
+        description: Ios release
+        required: true
+        type: choice
+        options:
+          - true
+          - false
 env:
   FLUTTER_VERSION: '3.24.1'
   SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
@@ -10,6 +25,7 @@ permissions: write-all # 给所有工作写权限
 
 jobs:
   job_v:
+    if : github.event.inputs.android_release == 'true' && github.event.inputs.ios_release == 'true'
     name: 构建版本号和变更信息
     runs-on: ubuntu-latest
     outputs:
@@ -28,6 +44,7 @@ jobs:
           echo ${{ format('version={0}', steps.create_version.outputs.tag_name ) }} 
 
   job_apk:
+    if: github.event.inputs.android_release == 'true'
     needs: job_v
     name: 构建android软件
     runs-on: ubuntu-latest
@@ -68,6 +85,7 @@ jobs:
           path: build/app/outputs/apk/release/schedule-android-all-${{ env.version }}.apk
 
   job_ipa:
+    if: github.event.inputs.ios_release == 'true'
     needs: job_v
     name: 构建ios软件
     runs-on: macos-latest
@@ -98,6 +116,7 @@ jobs:
           path: build/ios/archive/Runner.xcarchive/Products/Applications/schedule-ios-${{ env.version }}.ipa
 
   job_release:
+    if : github.event.inputs.android_release == 'true' && github.event.inputs.ios_release == 'true'
     needs: [ job_v,job_apk,job_ipa ]
     name: 发布版本
     runs-on: ubuntu-latest
