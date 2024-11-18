@@ -38,6 +38,8 @@ jobs:
         run: echo $SIGNING_KEY | base64 -d > android/app/key.jks
       - name: 设置 Shorebird
         uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
       - name: 执行编译
         uses: shorebirdtech/shorebird-patch@v0
         id: shorebird-patch
@@ -61,6 +63,8 @@ jobs:
           submodules: recursive
       - name: 设置 Shorebird
         uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
       - name: Build (ios)
         uses: shorebirdtech/shorebird-patch@v0
         with:
