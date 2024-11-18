@@ -1,0 +1,98 @@
+name: ReleaseBuild
+
+on:
+  workflow_dispatch: # 手动触发
+    inputs:
+      android_release:
+        description: Android release
+        required: true
+        type: choice
+        options:
+          - true
+          - false
+      ios_release:
+        description: Ios release
+        required: true
+        type: choice
+        options:
+          - true
+          - false
+      version:
+        description: 版本号
+        default: 'v1.0.0'
+        required: true
+        type: string
+env:
+  FLUTTER_VERSION: '3.24.1'
+  SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
+
+permissions: write-all # 给所有工作写权限
+
+jobs:
+  job_apk:
+    if : ${{ inputs.android_release == 'true' }}
+    name: 构建android软件
+    runs-on: ubuntu-latest
+    env:
+      version: ${{ inputs.version }}
+      ALIAS: ${{ secrets.ALIAS }}
+      KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+      KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: 编译环境设置 Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: 构建签名环境
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: echo $SIGNING_KEY | base64 -d > android/app/key.jks
+      - name: 设置 Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+      - name: 执行编译全架构
+        uses: shorebirdtech/shorebird-release@v0
+        with:
+          platform: android
+          args: --flutter-version=${{env.FLUTTER_VERSION}} --artifact=apk --target-platform=android-arm,android-arm64
+      - name: 重命名文件
+        run: mv build/app/outputs/apk/release/app-release.apk build/app/outputs/apk/release/schedule-android-all-${{ env.version }}.apk
+      - name: 上传产物全架构
+        uses: actions/upload-artifact@v3
+        with:
+          name: android-all
+          path: build/app/outputs/apk/release/schedule-android-all-${{ env.version }}.apk
+
+  job_ipa:
+    if : ${{ inputs.ios_release == 'true' }}
+    name: 构建ios软件
+    runs-on: macos-latest
+    env:
+      version: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: 设置 Shorebird
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+      - name: Build (ios)
+        uses: shorebirdtech/shorebird-release@v0
+        with:
+          platform: ios
+          args: --flutter-version=${{env.FLUTTER_VERSION}} --no-codesign
+      - name: 构造ipa
+        run: |
+          sh scripts/build-ipa.sh
+          mv build/ios/archive/Runner.xcarchive/Products/Applications/release-ios.ipa build/ios/archive/Runner.xcarchive/Products/Applications/schedule-ios-${{ env.version }}.ipa
+      - name: 上传产物
+        uses: actions/upload-artifact@v3
+        with:
+          name: ios
+          path: build/ios/archive/Runner.xcarchive/Products/Applications/schedule-ios-${{ env.version }}.ipa
