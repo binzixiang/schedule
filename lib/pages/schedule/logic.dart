@@ -219,6 +219,6 @@ class ScheduleLogic extends GetxController {
     //       break;
     //   }
     // });
-    await userApi.loginEducationalSystem(userAccount: username, userPassword: password);
+    await userApi.autoLoginEducationalSystem(userAccount: username, userPassword: password);
   }
 }
