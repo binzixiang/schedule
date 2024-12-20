@@ -32,7 +32,8 @@ class FunctionExamPlanLogic extends GetxController {
         }
 
         final examTime = DateTime.parse(match.group(0)!);
-        return examTime.isBefore(DateTime.now());
+        const oneDay = Duration(days: 1);
+        return examTime.isBefore(DateTime.now().subtract(oneDay));
       });
       state.personExamList.value = value;
       update();
