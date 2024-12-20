@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:schedule/common/utils/schedule_utils.dart';
 import 'package:schedule/common/widget/score_card/view.dart';
 
 import '../../../../common/utils/screen_utils.dart';
@@ -64,7 +65,8 @@ class FunctionExamPlanPage extends StatelessWidget {
             subjectName: logic.state.personExamList[index]['examName'],
             subTitle: S.of(context).function_social_exams_time(
                 logic.state.personExamList[index]['examTime']),
-            score: logic.state.personExamList[index]['examAddress'],
+            score: ScheduleUtils.formatAddress(
+                logic.state.personExamList[index]['examAddress']),
           );
         },
       );
